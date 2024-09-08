@@ -2,17 +2,38 @@ import socket
 import struct
 import argparse
 import sys
-import pyttsx3
+import threading
+
+printing_lock: threading.Lock = threading.Lock()
+
+
+def run_connection(connection) -> None:
+    """
+    The function manages a connection with a client
+    :param connection: the connection
+    :rtype: None
+    """
+    sz: int = struct.unpack("<I", connection.recv(4))[0]
+    data: bytes = connection.recv(sz)
+    with printing_lock:
+        print(data.decode('utf-8'))
+
 
 def run_server(ip, port):
+    """
+    The function runs the server
+    :param ip: the ip address to bind to
+    :type ip: str
+    :param port: the port to bind to
+    :type ip: str
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serv:
         serv.bind((ip, port))
         serv.listen()
         while True:
             connection, addr = serv.accept()
-            sz = struct.unpack("<I", connection.recv(4))
-            data = connection.recv(sz[0])
-            print(data.decode('utf-8'))
+            t: threading.Thread = threading.Thread(target=run_connection(connection))
+            t.start()
 
 
 def get_args():
@@ -38,7 +59,4 @@ def main():
 
 
 if __name__ == '__main__':
-    engine = pyttsx3.init()
-    engine.say("hello ben the programmer")
-    engine.runAndWait()
     sys.exit(main())
