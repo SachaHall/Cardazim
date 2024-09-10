@@ -1,7 +1,7 @@
 import socket
 import threading
 from connection import Connection
-
+import os
 
 class Listener:
     def __init__(self, port, host, backlog=1000):
@@ -19,6 +19,7 @@ class Listener:
         self.serv.close()
 
     def __enter__(self):
+        self.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -30,9 +31,10 @@ printing_lock: threading.Lock = threading.Lock()
 
 def run_connection(connection: Connection):
     with connection as conn:
+        data = conn.receive_message()
         with printing_lock:
             print(
-                f"received: {conn.receive_message()}",
+                f"received: {data}",
                 f"from {conn.get_client_name()}")
 
 

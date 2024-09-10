@@ -1,19 +1,20 @@
-import socket
-import struct
 import argparse
 import sys
 import threading
 import os
-printing_lock: threading.Lock = threading.Lock()
 from connection import Connection
 from listener import Listener
+
+printing_lock: threading.Lock = threading.Lock()
 
 
 def run_connection(connection: Connection) -> None:
     with connection as conn:
+        data = conn.receive_message()
         with printing_lock:
+            #os.system(f"say {data}")
             print(
-                f"received: {conn.receive_message()}",
+                f"received: {data}",
                 f"from {conn.get_client_name()}")
 
 
@@ -26,7 +27,6 @@ def run_server(ip: str, port: int):
     :type ip: str
     """
     with Listener(port, ip) as listener:
-        listener.start()
         while True:
             t: threading.Thread = threading.Thread(
                 target=run_connection(listener.accept()))

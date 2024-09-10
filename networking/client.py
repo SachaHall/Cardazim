@@ -1,7 +1,5 @@
 import argparse
 import sys
-import socket
-import struct
 from connection import Connection
 
 
@@ -15,7 +13,7 @@ def send_data(server_ip: str, server_port: int, data) -> None:
     """
     with Connection.connect(server_ip, server_port) as connection:
         print(connection)
-        connection.send_message(b'hello')
+        connection.send_message(data.encode('utf-8'))
 
 
 ###########################################################
