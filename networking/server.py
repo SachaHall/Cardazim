@@ -3,7 +3,7 @@ import struct
 import argparse
 import sys
 import threading
-
+import os
 printing_lock: threading.Lock = threading.Lock()
 
 
@@ -16,6 +16,7 @@ def run_connection(connection) -> None:
     sz: int = struct.unpack("<I", connection.recv(4))[0]
     data: bytes = connection.recv(sz)
     with printing_lock:
+        #os.system(f"say {data}")
         print(data.decode('utf-8'))
 
 
@@ -32,7 +33,8 @@ def run_server(ip, port):
         serv.listen()
         while True:
             connection, addr = serv.accept()
-            t: threading.Thread = threading.Thread(target=run_connection(connection))
+            t: threading.Thread = threading.Thread(
+                target=run_connection(connection))
             t.start()
 
 
