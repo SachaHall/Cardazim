@@ -24,22 +24,26 @@ class Listener:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
 
+
 printing_lock: threading.Lock = threading.Lock()
 
 
 def run_connection(connection: Connection):
-    with connection as connection:
+    with connection as conn:
         with printing_lock:
-            print(connection.receive_message())
+            print(
+                f"received: {conn.receive_message()}",
+                f"from {conn.get_client_name()}")
 
 
 def main():
-    with Listener(8080, '127.0.0.1') as listener:
+    with Listener(8080, '172.30.64.159') as listener:
         listener.start()
         while True:
             t: threading.Thread = threading.Thread(
                 target=run_connection(listener.accept()))
             t.start()
+
 
 if __name__ == "__main__":
     main()
