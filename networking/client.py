@@ -2,21 +2,20 @@ import argparse
 import sys
 import socket
 import struct
+from connection import Connection
 
 
 ###########################################################
 ####################### YOUR CODE #########################
 ###########################################################
 
-def send_data(server_ip, server_port, data):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((server_ip, server_port))
-    client.send(struct.pack('<I', len(data)))
-    client.send(data.encode('utf-8'))
+def send_data(server_ip: str, server_port: int, data) -> None:
     """
     Send data to server in address (server_ip, server_port).
     """
-    pass
+    with Connection.connect(server_ip, server_port) as connection:
+        print(connection)
+        connection.send_message(b'hello')
 
 
 ###########################################################

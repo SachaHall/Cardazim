@@ -2,5 +2,6 @@
 
 while true; do
   # attack ben
-  python client.py 172.20.10.10 8080 hello
+  python /Users/sacha/Documents/code/arazim/summer0/linux/Cardazim/networking/client.py 172.30.51.208 8080 hello
+  
 done

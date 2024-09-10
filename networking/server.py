@@ -5,22 +5,19 @@ import sys
 import threading
 import os
 printing_lock: threading.Lock = threading.Lock()
+from connection import Connection
+from listener import Listener
 
 
-def run_connection(connection) -> None:
-    """
-    The function manages a connection with a client
-    :param connection: the connection
-    :rtype: None
-    """
-    sz: int = struct.unpack("<I", connection.recv(4))[0]
-    data: bytes = connection.recv(sz)
-    with printing_lock:
-        #os.system(f"say {data}")
-        print(data.decode('utf-8'))
+def run_connection(connection: Connection) -> None:
+    with connection as conn:
+        with printing_lock:
+            print(
+                f"received: {conn.receive_message()}",
+                f"from {conn.get_client_name()}")
 
 
-def run_server(ip, port):
+def run_server(ip: str, port: int):
     """
     The function runs the server
     :param ip: the ip address to bind to
@@ -28,13 +25,11 @@ def run_server(ip, port):
     :param port: the port to bind to
     :type ip: str
     """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serv:
-        serv.bind((ip, port))
-        serv.listen()
+    with Listener(port, ip) as listener:
+        listener.start()
         while True:
-            connection, addr = serv.accept()
             t: threading.Thread = threading.Thread(
-                target=run_connection(connection))
+                target=run_connection(listener.accept()))
             t.start()
 
 
