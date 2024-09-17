@@ -15,8 +15,8 @@ class CryptImage:
     def encrypt(self, key: str) -> None:
         data: bytes = self.image.tobytes()
         size: tuple[int, int] = self.image.size
-        self.key_hash: bytes = sha256(key.encode()).digest()
-        cipher = AES.new(self.key_hash, AES.MODE_EAX, nonce=b'arazim')
+        self.key_hash: bytes = sha256(sha256(key.encode()).digest()).digest()
+        cipher = AES.new(sha256(key.encode()).digest(), AES.MODE_EAX, nonce=b'arazim')
         encrypted = cipher.encrypt(data)
         try:
             assert len(encrypted) == len(data)
@@ -25,20 +25,21 @@ class CryptImage:
         self.image = Image.frombytes(self.image.mode, size, encrypted)
 
     def decrypt(self, key: str) -> bool:
-        if sha256(key.encode()).digest() != self.key_hash:
+        if sha256(sha256(key.encode()).digest()).digest() != self.key_hash:
             return False
         data: bytes = self.image.tobytes()
         size: tuple[int, int] = self.image.size
-        cipher = AES.new(self.key_hash, AES.MODE_EAX, nonce=b'arazim')
+        cipher = AES.new(sha256(key.encode()).digest(), AES.MODE_EAX, nonce=b'arazim')
         decrypted = cipher.decrypt(data)
         try:
             assert len(decrypted) == len(data)
         except AssertionError:
             print("problem with decryption boom boom boom")
         self.image = Image.frombytes(self.image.mode, size, decrypted)
+        return True
 
     def get_image_data(self) -> bytes:
-        height, width = self.image.size
+        width, height = self.image.size
         height_b: bytes = pack_int(height)
         width_b: bytes = pack_int(width)
         assert self.key_hash is not None
@@ -58,7 +59,7 @@ class CryptImage:
         bin_data: bytes = data[ind: ind+3*height*width]
         ind += 3*height*width
         key_hash: bytes = data[ind:ind+32]
-        image_obj: Image = Image.frombytes("RGB", (height, width), bin_data)
+        image_obj: Image = Image.frombytes("RGB", (width, height), bin_data)
         image: CryptImage = CryptImage(image_obj, key_hash)
         return image, data[ind+32:]
 

@@ -6,6 +6,7 @@ from connection import Connection
 from card import Card
 from os import PathLike
 
+
 def send_data(server_ip: str, server_port: int, data: bytes) -> None:
     """
     Send data to server in address (server_ip, server_port).
@@ -29,7 +30,7 @@ def get_args():
                         help='the riddle')
     parser.add_argument('solution', type=str,
                         help='the solution to the riddle')
-    parser.add_argument('path', type=Union[PathLike, str],
+    parser.add_argument('path', type=str,
                         help='the path to the image')
 
     return parser.parse_args()
@@ -40,11 +41,11 @@ def main():
     Implementation of CLI and sending data to server.
     '''
     args = get_args()
-    card: Card = Card.create_from_path(args.name, args.creator, args.path, args.riddle, args.solution)
-    card.image.encrypt("oulala")
+    card: Card = Card.create_from_path(args.name, args.creator, args.path,
+                                       args.riddle, args.solution)
+    card.image.encrypt(card.solution)
     send_data(args.server_ip, args.server_port, card.serialize())
     print('Done.')
-
 
 
 if __name__ == '__main__':

@@ -19,7 +19,8 @@ def run_connection(connection: Connection) -> None:
             print(
                 f"received card: {card.name} created by {card.creator} ",
                 f"from {conn.get_client_name()}")
-            card.image.decrypt("oulala")
+            key = input(card.riddle)
+            print(card.image.decrypt(key))
             card.image.show()
 
 
