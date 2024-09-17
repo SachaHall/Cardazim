@@ -31,7 +31,7 @@ printing_lock: threading.Lock = threading.Lock()
 
 def run_connection(connection: Connection):
     with connection as conn:
-        data = conn.receive_message()
+        data = conn.receive_message().decode('utf-8')
         with printing_lock:
             print(
                 f"received: {data}",

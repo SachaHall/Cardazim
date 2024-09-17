@@ -4,18 +4,23 @@ import threading
 import os
 from connection import Connection
 from listener import Listener
+from card import Card
 
 printing_lock: threading.Lock = threading.Lock()
 
 
 def run_connection(connection: Connection) -> None:
     with connection as conn:
-        data = conn.receive_message()
+        data: bytes = conn.receive_message()
+        print(len(data))
+        card: Card = Card.deserialize(data)
         with printing_lock:
             #os.system(f"say {data}")
             print(
-                f"received: {data}",
+                f"received card: {card.name} created by {card.creator} ",
                 f"from {conn.get_client_name()}")
+            card.image.decrypt("oulala")
+            card.image.show()
 
 
 def run_server(ip: str, port: int):
@@ -47,12 +52,12 @@ def main():
     Implementation of CLI and sending data to server.
     '''
     args = get_args()
-    try:
-        run_server(args.server_ip, args.server_port)
-        print('Done.')
-    except Exception as error:
+    """try:"""
+    run_server(args.server_ip, args.server_port)
+    print('Done.')
+    """except Exception as error:
         print(f'ERROR: {error}')
-        return 1
+        return 1"""
 
 
 if __name__ == '__main__':

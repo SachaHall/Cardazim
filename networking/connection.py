@@ -1,6 +1,6 @@
 import socket
 import struct
-import time
+from utils import pack_int, unpack_int
 
 
 class Connection:
@@ -8,16 +8,25 @@ class Connection:
         self.__connection__: socket.socket = connection
 
     def send_message(self, message: bytes):
-        self.__connection__.send(struct.pack('<I', len(message)))
+        self.__connection__.send(pack_int(len(message)))
         self.__connection__.send(message)
 
-    def receive_message(self):
-        sz: int = struct.unpack("<I", self.__connection__.recv(4))[0]
-        return self.__connection__.recv(sz).decode('utf-8')
+    def receive_message(self) -> bytes:
+        sz: int = unpack_int(self.__connection__.recv(4))
+        data: bytes = bytes()
+
+        while len(data) < sz:
+            packet = self.__connection__.recv(sz)
+            if not packet:
+                raise ValueError("Invalid message")
+            data += packet
+        return data
+
+
 
     @classmethod
     def connect(cls, host, port):
-        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn.connect((host, port))
         return cls(conn)
 
@@ -44,7 +53,7 @@ def main():
     with Connection.connect('127.0.0.1', 8080) as connection:
         print(connection)
         connection.send_message(b'hello')
-        data = connection.receive_message()
+        data: str = connection.receive_message()
         print(data)
 
 
