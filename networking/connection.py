@@ -22,8 +22,6 @@ class Connection:
             data += packet
         return data
 
-
-
     @classmethod
     def connect(cls, host, port):
         conn: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

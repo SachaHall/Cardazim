@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import os
+
 from crypt_image import CryptImage
 from typing import Union
 from os import PathLike
@@ -47,8 +50,9 @@ class Card:
 
 def main():
     solution = "Brakha"
+    os.chdir(os.path.dirname(__file__))
     card = Card.create_from_path("Card1", "Sacha The Boss",
-                                 "/Users/sacha/Documents/code/arazim/summer0/linux/Cardazim/networking/soldier.jpeg",
+                                 "soldier.jpeg",
                                  "What do you say before eating?", solution)
     card.image.encrypt(card.solution)
     data = card.serialize()

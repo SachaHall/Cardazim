@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os.path
 from os import PathLike
 from typing import Union
 from PIL import Image
@@ -9,12 +11,12 @@ from utils import pack_int, unpack_int
 
 class CryptImage:
     def __init__(self, image, key_hash):
-        self.image: Image = image
+        self.image: Image.Image = image
         self.key_hash: bytes = key_hash
 
     def encrypt(self, key: str) -> None:
         data: bytes = self.image.tobytes()
-        size: tuple[int, int] = self.image.size
+        size = self.image.size
         self.key_hash: bytes = sha256(sha256(key.encode()).digest()).digest()
         cipher = AES.new(sha256(key.encode()).digest(), AES.MODE_EAX, nonce=b'arazim')
         encrypted = cipher.encrypt(data)
@@ -27,8 +29,8 @@ class CryptImage:
     def decrypt(self, key: str) -> bool:
         if sha256(sha256(key.encode()).digest()).digest() != self.key_hash:
             return False
-        data: bytes = self.image.tobytes()
-        size: tuple[int, int] = self.image.size
+        data = self.image.tobytes()
+        size = self.image.size
         cipher = AES.new(sha256(key.encode()).digest(), AES.MODE_EAX, nonce=b'arazim')
         decrypted = cipher.decrypt(data)
         try:
@@ -68,7 +70,7 @@ class CryptImage:
 
 
 if __name__ == "__main__":
-    im = CryptImage.create_from_path(
-        "/Users/sacha/Documents/code/arazim/summer0/linux/Cardazim/networking/soldier.jpeg")
+    os.chdir(os.path.dirname(__file__))
+    im = CryptImage.create_from_path("soldier.jpeg")
     im.encrypt("heyo")
     im.decrypt("heyo")
