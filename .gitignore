@@ -10,7 +10,7 @@
 # VEnv
 .env
 .venv
-.myenv
+networking/myenv
 
 # Python
 __pycache__
