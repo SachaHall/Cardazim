@@ -47,7 +47,8 @@ class Card:
         riddle, data = get_str_from_bytes(data)
         return Card(name, creator, riddle, None, image)
 
-
+    def get_identifier(self) -> str:
+        return f"{self.name}.{self.creator}"
 def main():
     solution = "Brakha"
     os.chdir(os.path.dirname(__file__))

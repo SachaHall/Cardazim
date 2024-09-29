@@ -50,3 +50,6 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+"""
+python client.py 127.0.0.1 8080 coolCard sacha "what does the fox say?" "Nothing" /Users/sacha/Documents/code/arazim/summer0/linux/Cardazim/networking/grimace.png"""

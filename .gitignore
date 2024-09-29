@@ -18,3 +18,9 @@ __pycache__
 # Eggs
 *.egg-info
 .eggs
+
+*.png
+
+database
+
+.gitignore
