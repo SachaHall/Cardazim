@@ -16,7 +16,8 @@ class CardManager:
         Path(path).mkdir(parents=True, exist_ok=True)
         os.chdir(path)
         image_path = os.path.join(path, "image.png")
-        open(image_path, "w")
+        print("path is", image_path)
+        open(image_path, "w").close()
         card.image.image.save(image_path)
         json_content = {"card.name": card.name,
                         "card.creator": card.creator,
